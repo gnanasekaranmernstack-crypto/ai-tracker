@@ -28,13 +28,14 @@ export default function Tools() {
       ]);
       setTools(toolsRes.data);
       setEmailsContext(emailsRes.data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch data');
     }
     setLoading(false);
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
@@ -79,7 +80,7 @@ export default function Tools() {
         await api.delete(`/tools/${id}`);
         toast.success('Tool deleted successfully');
         fetchData();
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete tool');
       }
     }
@@ -210,17 +211,17 @@ export default function Tools() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1.5 font-medium text-gray-300">Limit Start <span className="text-rose-500">*</span></label>
-                  <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input [color-scheme:dark]" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} />
+                  <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input scheme-dark" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} />
                 </div>
                 <div>
                   <label className="block mb-1.5 font-medium text-gray-300">Limit End <span className="text-rose-500">*</span></label>
-                  <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input [color-scheme:dark]" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} />
+                  <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input scheme-dark" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} />
                 </div>
               </div>
               
               <div>
                 <label className="block mb-1.5 font-medium text-gray-300">Renewal Date <span className="text-rose-500">*</span></label>
-                <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input [color-scheme:dark]" value={formData.renewalDate} onChange={e => setFormData({...formData, renewalDate: e.target.value})} />
+                <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input scheme-dark" value={formData.renewalDate} onChange={e => setFormData({...formData, renewalDate: e.target.value})} />
               </div>
               
               <div>

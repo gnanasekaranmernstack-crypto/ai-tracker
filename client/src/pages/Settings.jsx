@@ -10,6 +10,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNotificationEmail(user.notificationEmail || user.email);
     }
   }, [user]);
@@ -20,7 +21,7 @@ export default function Settings() {
     try {
       await updateNotificationEmail(notificationEmail);
       toast.success('Notification settings updated');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update notification email');
     }
     setLoading(false);
@@ -37,7 +38,7 @@ export default function Settings() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500 rounded-full blur-[60px] opacity-20 pointer-events-none"></div>
             
             <div className="flex flex-col items-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl shadow-[0_0_20px_rgba(99,102,241,0.5)] mb-4 border-2 border-indigo-300">
+              <div className="w-20 h-20 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl shadow-[0_0_20px_rgba(99,102,241,0.5)] mb-4 border-2 border-indigo-300">
                 {user?.name?.charAt(0) || 'U'}
               </div>
               <h3 className="text-xl font-bold text-white">{user?.name}</h3>
@@ -92,7 +93,7 @@ export default function Settings() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2.5 text-white font-medium bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 text-white font-medium bg-linear-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-500 hover:to-purple-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center">

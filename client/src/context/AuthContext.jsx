@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import api from '../lib/api';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const { data } = await api.get('/auth/me');
           setUser(data);
-        } catch (error) {
+        } catch {
           localStorage.removeItem('token');
         }
       }

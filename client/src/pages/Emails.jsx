@@ -18,13 +18,14 @@ export default function Emails() {
     try {
       const { data } = await api.get('/emails');
       setEmails(data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch emails');
     }
     setLoading(false);
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchEmails();
   }, []);
 
@@ -60,7 +61,7 @@ export default function Emails() {
         await api.delete(`/emails/${id}`);
         toast.success('Email deleted successfully');
         fetchEmails();
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete email');
       }
     }
@@ -98,7 +99,7 @@ export default function Emails() {
              </div>
              
              <div className="relative z-10 pt-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center mb-4">
                   <Mail className="w-5 h-5 text-indigo-400" />
                 </div>
                 <p className="font-semibold text-lg text-white mt-2 truncate pr-16" title={email.emailAddress}>{email.emailAddress}</p>
