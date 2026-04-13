@@ -9,15 +9,38 @@ const { setupCronJobs } = require('./cron');
 const mongoose = require('mongoose');
 
 const app = express();
-const allowedOrigins = [
+const configuredOrigins = [
+    ...(process.env.CLIENT_URLS || '')
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean),
     process.env.CLIENT_URL,
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+    'https://ai-tracker-six.vercel.app',
     'http://localhost:5173',
     'http://127.0.0.1:5173'
 ].filter(Boolean);
+
+const isAllowedOrigin = (origin) => {
+    if (!origin) {
+        return true;
+    }
+
+    if (configuredOrigins.includes(origin)) {
+        return true;
+    }
+
+    try {
+        const { hostname } = new URL(origin);
+        return hostname.endsWith('.vercel.app');
+    } catch {
+        return false;
+    }
+};
+
 const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (isAllowedOrigin(origin)) {
             return callback(null, true);
         }
 
