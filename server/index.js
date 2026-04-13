@@ -17,6 +17,20 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'AI Tool Tracker API is running'
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        status: 'ok'
+    });
+});
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tools', require('./routes/toolRoutes'));
