@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import api from '../lib/api';
 import { toast } from 'react-toastify';
 import { Trash2, Edit, Plus, Download, X } from 'lucide-react';
 import { format } from 'date-fns';
 
+const toDateInputValue = (value) => format(new Date(value), 'yyyy-MM-dd');
+const toDateTimeInputValue = (value) => format(new Date(value), "yyyy-MM-dd'T'HH:mm");
+const toLocalDateIso = (value) => new Date(`${value}T12:00:00`).toISOString();
+const toLocalDateTimeIso = (value) => new Date(value).toISOString();
+
 export default function Tools() {
+  const { refreshDashboardData } = useOutletContext();
   const [tools, setTools] = useState([]);
   const [emailsContext, setEmailsContext] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,9 +52,9 @@ export default function Tools() {
         id: tool._id,
         toolName: tool.toolName,
         emails: tool.emails.map(e => e._id),
-        startDate: format(new Date(tool.startDate), "yyyy-MM-dd'T'HH:mm"),
-        endDate: format(new Date(tool.endDate), "yyyy-MM-dd'T'HH:mm"),
-        renewalDate: format(new Date(tool.renewalDate), "yyyy-MM-dd'T'HH:mm"),
+        startDate: toDateInputValue(tool.startDate),
+        endDate: toDateInputValue(tool.endDate),
+        renewalDate: toDateTimeInputValue(tool.renewalDate),
         notes: tool.notes || ''
       });
     } else {
@@ -59,7 +66,12 @@ export default function Tools() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...formData };
+      const payload = {
+        ...formData,
+        startDate: toLocalDateIso(formData.startDate),
+        endDate: toLocalDateIso(formData.endDate),
+        renewalDate: toLocalDateTimeIso(formData.renewalDate)
+      };
       if (formData.id) {
         await api.put(`/tools/${formData.id}`, payload);
         toast.success('Tool updated successfully');
@@ -68,6 +80,7 @@ export default function Tools() {
         toast.success('Tool added successfully');
       }
       setIsModalOpen(false);
+      await refreshDashboardData?.();
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error saving tool');
@@ -79,6 +92,7 @@ export default function Tools() {
       try {
         await api.delete(`/tools/${id}`);
         toast.success('Tool deleted successfully');
+        await refreshDashboardData?.();
         fetchData();
       } catch {
         toast.error('Failed to delete tool');
@@ -87,7 +101,7 @@ export default function Tools() {
   };
 
   const handleExport = (type) => {
-    window.open(`http://localhost:5001/api/export/${type}?token=${localStorage.getItem('token')}`, '_blank');
+    window.open(`${api.defaults.baseURL}/export/${type}?token=${localStorage.getItem('token')}`, '_blank');
   };
 
   if (loading) return (
@@ -211,11 +225,11 @@ export default function Tools() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1.5 font-medium text-gray-300">Limit Start <span className="text-rose-500">*</span></label>
-                  <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input scheme-dark" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} />
+                  <input required type="date" className="w-full px-4 py-2.5 rounded-xl glass-input scheme-dark" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} />
                 </div>
                 <div>
                   <label className="block mb-1.5 font-medium text-gray-300">Limit End <span className="text-rose-500">*</span></label>
-                  <input required type="datetime-local" className="w-full px-4 py-2.5 rounded-xl glass-input scheme-dark" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} />
+                  <input required type="date" className="w-full px-4 py-2.5 rounded-xl glass-input scheme-dark" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} />
                 </div>
               </div>
               

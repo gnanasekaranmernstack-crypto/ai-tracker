@@ -1,24 +1,16 @@
-import { useState, useEffect } from 'react';
-import api from '../lib/api';
+import { useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts';
-import { Activity, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle, Clock, X } from 'lucide-react';
 
 export default function Dashboard() {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { dashboardData: stats } = useOutletContext();
+  const loading = !stats;
+  const [dismissedAlertIds, setDismissedAlertIds] = useState([]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const { data } = await api.get('/dashboard');
-        setStats(data);
-      } catch (error) {
-        console.error('Error fetching dashboard stats', error);
-      }
-      setLoading(false);
-    };
-    fetchStats();
-  }, []);
+  const visibleAlerts = stats?.notifications?.filter(
+    (notification) => !dismissedAlertIds.includes(notification.id)
+  ) || [];
 
   if (loading) return (
     <div className="flex items-center justify-center h-[70vh]">
@@ -97,6 +89,50 @@ export default function Dashboard() {
               <p className="text-3xl font-bold tracking-tight text-white mt-1">{stats?.upcomingRenewals || 0}</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="glass-panel p-6 rounded-3xl">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div>
+            <h3 className="text-xl font-bold text-white">Alerts</h3>
+            <p className="text-sm text-gray-400 mt-1">Current renewal and expiry updates for your tracked tools.</p>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {visibleAlerts.length ? visibleAlerts.map((notification) => (
+            <div key={notification.id} className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div>
+                <p className="text-sm font-medium text-white">{notification.text}</p>
+                <p className="mt-1 text-xs text-gray-500">{new Date(notification.date).toLocaleString()}</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${
+                  notification.type === 'renewal'
+                    ? 'bg-emerald-500/15 text-emerald-300'
+                    : notification.type === 'expired'
+                      ? 'bg-rose-500/15 text-rose-300'
+                      : 'bg-amber-500/15 text-amber-300'
+                }`}>
+                  {notification.type}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setDismissedAlertIds((current) => (
+                    current.includes(notification.id) ? current : [...current, notification.id]
+                  ))}
+                  className="rounded-lg p-1 text-gray-500 transition-colors hover:bg-white/10 hover:text-white"
+                  aria-label="Dismiss alert"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )) : (
+            <div className="rounded-2xl border border-dashed border-white/10 p-6 text-sm text-gray-500">
+              No active alerts right now.
+            </div>
+          )}
         </div>
       </div>
 

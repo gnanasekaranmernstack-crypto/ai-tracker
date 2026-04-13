@@ -2,7 +2,10 @@ const Tool = require('../models/Tool');
 
 const getTools = async (req, res) => {
   try {
-    const tools = await Tool.find({ user: req.user._id }).populate('emails');
+    const tools = await Tool.find({ user: req.user._id })
+      .populate('emails')
+      .sort({ renewalDate: 1 })
+      .lean();
     res.json(tools);
   } catch (error) {
     res.status(500).json({ message: error.message });

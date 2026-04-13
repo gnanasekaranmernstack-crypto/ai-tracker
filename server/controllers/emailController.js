@@ -2,7 +2,9 @@ const Email = require('../models/Email');
 
 const getEmails = async (req, res) => {
   try {
-    const emails = await Email.find({ user: req.user._id });
+    const emails = await Email.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .lean();
     res.json(emails);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -42,7 +42,7 @@ export default function Settings() {
                 {user?.name?.charAt(0) || 'U'}
               </div>
               <h3 className="text-xl font-bold text-white">{user?.name}</h3>
-              <p className="text-sm text-indigo-300 bg-indigo-500/10 px-3 py-1 rounded-full mt-2 font-medium border border-indigo-500/20">Pro Member</p>
+              <p className="text-sm text-indigo-300 bg-indigo-500/10 px-3 py-1 rounded-full mt-2 font-medium border border-indigo-500/20">{user?.email}</p>
             </div>
 
             <div className="mt-8 space-y-4">
