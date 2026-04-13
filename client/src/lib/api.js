@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const getBaseUrl = () => {
-  const envUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+  const envUrl =
+    import.meta.env.VITE_API_URL?.trim() ||
+    import.meta.env.VITE_API_BASE_URL?.trim();
 
   if (envUrl) {
     const normalizedUrl = envUrl.replace(/\/+$/, '');
