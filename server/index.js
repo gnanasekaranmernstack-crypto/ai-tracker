@@ -6,9 +6,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const { setupCronJobs } = require('./cron');
-
-// Connect to DB
-connectDB();
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -25,9 +23,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
+    const dbState = mongoose.connection.readyState;
+    const isDbConnected = dbState === 1;
+
     res.status(200).json({
         success: true,
-        status: 'ok'
+        status: 'ok',
+        database: isDbConnected ? 'connected' : 'disconnected'
     });
 });
 
@@ -52,4 +54,10 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     setupCronJobs();
+
+    connectDB().then((connected) => {
+        if (!connected) {
+            console.warn('Server is running, but MongoDB is not connected yet.');
+        }
+    });
 });
